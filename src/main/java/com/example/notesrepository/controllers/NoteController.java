@@ -2,18 +2,20 @@ package com.example.notesrepository.controllers;
 
 import com.example.notesrepository.entities.Note;
 import com.example.notesrepository.services.NoteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1/notes")
+@RequiredArgsConstructor
 public class NoteController {
-    @Autowired
-    private NoteService noteService;
+    private final NoteService noteService;
 
     @GetMapping("")
     public ResponseEntity<?> getAll() {
@@ -30,11 +32,16 @@ public class NoteController {
             return ResponseEntity.status(HttpStatus.OK).body(noteService
                     .findAll()
                     .stream()
-                    .filter(note -> note.getStatus()
+                    .filter(Note::getStatus
                     ).collect(Collectors.toList()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor, intente más tarde.\"}");
         }
+    }
+
+    @GetMapping("/active/{id}")
+    public Optional<Note> getById(@PathVariable Long id) throws Exception {
+        return noteService.findById(id);
     }
 
     @GetMapping("/{id}")
@@ -62,5 +69,26 @@ public class NoteController {
         } catch(Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor, intente más tarde.\"}");
         }
+    }
+
+    @PatchMapping("/delete/{id}")
+    public ResponseEntity<?> deleteNote(Long id, Note note) {
+        try {
+            Optional<Note> existingNoteOptional = noteService.findById(id);
+
+            if (existingNoteOptional.isPresent()) {
+                Note existingNote = existingNoteOptional.get();
+                existingNote.setTitle(note.getTitle());
+                existingNote.setBody(note.getBody());
+                existingNote.setStatus(false);
+                existingNote.setRegisterUser(note.getRegisterUser());
+                existingNote.setRegisterDate(note.getRegisterDate());
+                existingNote.setCategory(note.getCategory());
+                noteService.save(existingNote);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Error. Por favor, intente más tarde.\"}");
+        }
+        return null;
     }
 }

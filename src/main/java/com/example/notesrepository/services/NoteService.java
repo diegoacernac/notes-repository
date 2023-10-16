@@ -3,16 +3,16 @@ package com.example.notesrepository.services;
 import com.example.notesrepository.entities.Note;
 import com.example.notesrepository.repositories.NoteRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class NoteService {
-    @Autowired
-    private NoteRepository noteRepository;
+    private final NoteRepository noteRepository;
 
     @Transactional
     public List<Note> findAll() throws Exception{
