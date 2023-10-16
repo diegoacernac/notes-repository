@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
+//import java.util.HashSet;
+//import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -20,16 +21,18 @@ public class Note {
     private String title;
     private String body;
     private Boolean status;
+    private Date registerDate;
+    private String registerUser;
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
 
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(
             name = "note_tag",
             joinColumns = @JoinColumn(name = "noteId"),
             inverseJoinColumns = @JoinColumn(name = "tagId")
     )
-    private Set<Tag> tags = new HashSet<>();
+    private Set<Tag> tags = new HashSet<>();*/
 }
